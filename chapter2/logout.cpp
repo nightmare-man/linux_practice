@@ -1,4 +1,5 @@
-#pragma pack(1)
+//不能用pack(1)设置全局对齐方式
+//影响栈检查 改用aligns
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,15 +17,18 @@ template<typename T>
 char* get_addr(T& t){
     return &(reinterpret_cast<char&>(t));
 }
+inline int min(int a,int b){
+    return a<b?a:b;
+}
 int main(int ac,char*av[]){
-    string s{"pts/12"};
-    //错的离谱，爆栈了原因在这热，在调用构造函数的时候调用了自己的成员
+    string s{"pts/75"};
     ifstream from{_PATH_WTMP,ios::binary};
     if(!from.is_open()) throw runtime_error("can't open");
     utmp tmp;
-    while( from.read(get_addr<utmp>(tmp),STRUCT_SIZE).good()&&\
-        0!=strncmp( s.c_str(),tmp.ut_line,s.length())
-    );
+    while( true){
+        if(!from.read(get_addr<utmp>(tmp),STRUCT_SIZE)) break;
+        if(0==strncmp(s.c_str(),tmp.ut_line,  min(s.length(),strlen(tmp.ut_line)) )) break;
+    }
     int seek=from.tellg();
     from.close();
     tmp.ut_tv.tv_sec=time(nullptr);

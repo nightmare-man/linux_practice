@@ -1,15 +1,19 @@
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <dirent.h>
 #include <iostream>
 #include <errno.h>
 #include <vector>
 #include <algorithm>
 #include <string.h>
+#include <iomanip>
+#include <time.h>
 using namespace std;
-void do_ls(const char* name){
-    DIR* s=opendir(name);
+void do_ls(const char* dir){
+    DIR* s=opendir(dir);
     if(!s) {
-        cout<<"can't open dir :"<<name<<endl;
+        cout<<"can't open dir :"<<dir<<endl;
         return;
     }
     vector<dirent*> v{};
@@ -19,7 +23,15 @@ void do_ls(const char* name){
     sort(v.begin(),v.end(),[](dirent* a,dirent* b){
         return strcmp(a->d_name,b->d_name)<0;
     });
-    for(auto x:v) cout<<x->d_name<<endl;
+    for(auto x:v){
+        struct stat tmp;
+        string s1{dir};
+        string s2{x->d_name};
+        int ret=stat((s1+s2).c_str(),&tmp);
+        if(ret) throw runtime_error("can't get info ");
+        char* time=ctime(&tmp.st_mtim.tv_sec);
+        cout<<setw(8)<<setiosflags(ios::left)<<x->d_name<<"\t"<<time<<endl;
+    }
     return;
 }
 int main(int ac,char*av[]){

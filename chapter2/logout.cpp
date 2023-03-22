@@ -5,6 +5,7 @@
 #include <string.h>
 #include <utmp.h>
 #include <time.h>
+#include <errno.h>
 using namespace std;
 constexpr int STRUCT_SIZE=sizeof(utmp);
 template<typename T>
@@ -28,7 +29,24 @@ int main(int ac,char*av[]){
     tmp.ut_tv.tv_sec=time(nullptr);
     ofstream to{_PATH_WTMP,to.binary};
     //没权限往 目标文件写
-    if(!to.is_open())throw runtime_error("can't open");
+    //使用errno来获取系统调用错误原因
+    if(!to.is_open()){
+        switch (errno)
+        {
+        case ENOENT:
+            cout<<"no such file\n";
+            break;
+        case EINTR :
+            cout<<"interrupted while opening file\n";
+            break;
+        case EACCES:
+            cout<<"don't have permission\n";
+            break;
+        default:
+            cout<<"unknow error while open file\n";
+            break;
+        }
+    }
     to.seekp(seek-STRUCT_SIZE,to.beg);
     to.write(as_bytes<utmp>(tmp),STRUCT_SIZE);
     return 0;

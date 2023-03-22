@@ -1,11 +1,12 @@
 #include <iostream>
 #include <fstream>
-#include <string.h>s
+#include <string.h>
 #include <utmp.h>
 #include <iomanip>
 #include <time.h>
 #include <string>
 using namespace std;
+constexpr bool SHOW_HOST=false;
 template<typename T>
 const char* as_bytes(const T& t){
     return &(reinterpret_cast<const char&>(t));
@@ -24,9 +25,11 @@ void show_time(time_t t){
 }
 void show_info(const utmp& x){
     if(x.ut_type!=USER_PROCESS) return;
-    cout<<setw(8)<<x.ut_user<<" ";
+    cout<<setw(8)<<x.ut_user<<" "<<setw(8)<<x.ut_line;
     show_time(time_t{x.ut_tv.tv_sec});
-    cout<<setw(8)<<x.ut_line<<" "<<x.ut_host<<endl;
+    if(SHOW_HOST) cout<<" "<<x.ut_host;
+    cout<<endl;
+    return;
 }
 int main(){
     utmp current_record;  

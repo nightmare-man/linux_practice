@@ -34,7 +34,7 @@ void show_info(const utmp& x){
 int main(){
     utmp current_record;  
     ifstream in{_PATH_WTMP,ios::binary};
-    if(!in) throw runtime_error("can't open file\n");  
+    if(!in.is_open()) throw runtime_error("can't open file\n");  
     while(in.read(get_addr<utmp>(current_record),sizeof(utmp))){
         show_info(current_record);
     }

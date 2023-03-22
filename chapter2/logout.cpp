@@ -18,7 +18,8 @@ char* get_addr(T& t){
 }
 int main(int ac,char*av[]){
     string s{"pts/12"};
-    ifstream from{_PATH_WTMP,from.binary};
+    //错的离谱，爆栈了原因在这热，在调用构造函数的时候调用了自己的成员
+    ifstream from{_PATH_WTMP,ios::binary};
     if(!from.is_open()) throw runtime_error("can't open");
     utmp tmp;
     while( from.read(get_addr<utmp>(tmp),STRUCT_SIZE).good()&&\
@@ -27,7 +28,7 @@ int main(int ac,char*av[]){
     int seek=from.tellg();
     from.close();
     tmp.ut_tv.tv_sec=time(nullptr);
-    ofstream to{_PATH_WTMP,to.binary};
+    ofstream to{_PATH_WTMP,ios::binary};
     //没权限往 目标文件写
     //使用errno来获取系统调用错误原因
     if(!to.is_open()){

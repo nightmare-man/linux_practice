@@ -72,6 +72,16 @@ void do_ls(const char* dir){
     }
     return;
 }
+/*
+如何在什么头绪都没有的情况下找到该用什么系统调用？并编程？
+比如要获取当前cpu占用情况，
+两个方向 1 有关cpu的信息的调用 2有关进程信息调用
+使用 man -k cpu | grep info
+man -k process | grep info
+来找到有关的系统调用（2是系统调用 3是库）
+找到readproctab后再使用
+man 3 readprctab来查看该调用的说明
+*/
 int main(int ac,char*av[]){
     if(ac<2) return 0;
     while(ac>1) show_file_info(av[--ac]);//do_ls(av[--ac]);

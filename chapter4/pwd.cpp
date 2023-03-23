@@ -19,9 +19,8 @@ string get_complete_path(){
         if(strcmp(x->d_name,".")==0) curr=x->d_ino;
         if(strcmp(x->d_name,"..")==0) parent=x->d_ino;
    }
-   string ppath{".."};
    while(true){
-        p=opendir(ppath.c_str());
+        p=opendir("..");
         if(!p) break;
         ino_t tmp=curr;
         for(dirent* x=nullptr;x=readdir(p);){
@@ -36,7 +35,7 @@ string get_complete_path(){
         }
         closedir(p);
         if(curr==parent) break;
-        ppath+="/..";
+        chdir("..");
    }
    for(int i=path.size()-1;i>=0;i--){
     ret+=path[i];

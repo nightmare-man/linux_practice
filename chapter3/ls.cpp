@@ -7,11 +7,33 @@
 #include <vector>
 #include <algorithm>
 #include <string.h>
+#include <string>
 #include <iomanip>
 #include <time.h>
+#include <pwd.h>
+#include <grp.h>
 using namespace std;
 //stat结构体里的st_mode字段是一个16位数，用位来编码
 //信息，因此要用掩码与运算获取对应位，定义在stat.h里
+
+/// @brief 根据uid查找对应group并返回信息
+/// @param uid 
+string gid_to_name(int gid){
+    group* p=getgrgid(gid);
+    if(!p) throw runtime_error{"该uid对应的组无法找到"};
+    return string{p->gr_name};
+}
+
+/// @brief 根据uid返回对应用户的信息
+/// @param uid 
+string uid_to_name(int uid){
+    passwd* p=getpwuid(uid);
+    if(!p) throw runtime_error{"没有该uid"};
+    return string{p->pw_name};
+}
+/// @brief 根据给定的mode，用掩码来解读16个位，高4位是文件类型中间三位是suid sgid sticky，低9位分别是用户 组 其他人的读写执行权限
+/// @param mode 位数据
+/// @return 返回的权限字符串
 string show_mode_info(int mode){
     string priv_str{"---------"};
     int filetype=mode&S_IFMT;
@@ -39,21 +61,23 @@ string show_mode_info(int mode){
     if(mode&S_IXOTH) priv_str[9]='x';
     return priv_str;
 }
+/// @brief 根据输入的文件路径显示文件信息
+/// @param fp 文件路径
 void show_file_info(const char* fp){
     struct stat tmp;
     int ret=stat(fp,&tmp);
     if(ret) throw runtime_error("can't get info ");
     char* time=ctime(&tmp.st_mtim.tv_sec);\
-    cout<<fp<<"\n";
-    cout<<setw(8)<<"mode:\t"<<tmp.st_mode<<"\n";
-    cout<<setw(8)<<"mode:\t"<<show_mode_info(tmp.st_mode)<<"\n";
-    cout<<setw(8)<<"links:\t"<<tmp.st_nlink<<"\n";
-    cout<<setw(8)<<"user:\t"<<tmp.st_uid<<"\n";
-    cout<<setw(8)<<"size:\t"<<tmp.st_size<<"\n";
-    cout<<setw(8)<<"group:\t"<<tmp.st_gid<<"\n";
-    cout<<setw(8)<<"time:\t"<<time<<"\n";
+    cout<<show_mode_info(tmp.st_mode);
+    cout<<setw(5)<<tmp.st_nlink;
+    cout<<setw(8)<<uid_to_name(tmp.st_uid);
+    cout<<setw(8)<<gid_to_name(tmp.st_gid);
+    cout<<setw(8)<<tmp.st_size;
+    cout<<setw(8)<<time<<"\n";
     return;
 }
+/// @brief 根据文件夹路径显示名下的目录项
+/// @param dir 文件夹路径
 void do_ls(const char* dir){
     DIR* s=opendir(dir);
     if(!s) {
@@ -68,7 +92,8 @@ void do_ls(const char* dir){
         return strcmp(a->d_name,b->d_name)<0;
     });
     for(auto x:v){
-        cout<<setw(8)<<setiosflags(ios::left)<<x->d_name<<endl;
+        cout<<setw(12)<<setiosflags(ios::left)<<x->d_name;
+        show_file_info((string{dir}+string{x->d_name}).c_str() );
     }
     return;
 }
@@ -84,6 +109,6 @@ man 3 readprctab来查看该调用的说明
 */
 int main(int ac,char*av[]){
     if(ac<2) return 0;
-    while(ac>1) show_file_info(av[--ac]);//do_ls(av[--ac]);
+    while(ac>1) do_ls(av[--ac]);
     return 0;
 }

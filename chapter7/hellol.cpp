@@ -6,12 +6,12 @@ using namespace std;
 int main(){
     initscr();
     for(int i=0;i<LINES;i++){
-        for(int j=0;j<COLS;j++){
-            clear();
-            move(i,j);
-            addch('X');
-            refresh();
-        }
+        move(i,i+1);
+        if(i%2==1) standout();
+        addstr("this");
+        if(i%2==1) standend();
+        sleep(1);
+        refresh();
     }    
     getch();
     endwin();

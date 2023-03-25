@@ -85,9 +85,9 @@ int main(){
     set_nodelay();
     int response=get_response(QUESTION);
     tty_mode(1);
-    //如果正常退出时，终端会自动恢复
+    //如果正常退出时，shell会让终端恢复
     //成阻塞模式，但是如果用ctrl+c
-    //会杀死进程，导致终端没有退出非阻塞模式，因此shell会
+    //会中断进程，导致终端没有退出非阻塞模式，因此shell会
     //卡住 待改进
     return response;
 }

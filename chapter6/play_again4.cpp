@@ -82,6 +82,9 @@ int get_response(const string& s){
 }
 void crtl_c_handler(int p){
     tty_mode(1);
+    int flag=fcntl(0,F_GETFL);
+    flag&=(~O_NONBLOCK);
+    fcntl(0,F_SETFL,flag);
     exit(1);
 }
 int main(){

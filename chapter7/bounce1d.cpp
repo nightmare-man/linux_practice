@@ -2,6 +2,7 @@
 #include <iostream>
 #include <signal.h>
 #include <sys/time.h>
+#include "set_ticker.h"
 #define MESSAGE "HELLO"
 #define MESSAGE_LEN 5
 #define BLANK   "     "//将原来的单词擦掉
@@ -10,16 +11,7 @@ int col=0;
 int dir=0;//方向
 using namespace std;
 
-void set_ticker(int ms){
-    int sec=ms/1000;
-    int us=(ms%1000)*1000;
-    struct itimerval newtime;
-    newtime.it_interval.tv_sec=sec;
-    newtime.it_interval.tv_usec=us;
-    newtime.it_value.tv_sec=sec;
-    newtime.it_value.tv_usec=us;
-    setitimer(ITIMER_REAL,&newtime,nullptr);
-}
+
 //显然这个处理函数是不可重入的，因此无法递归，处理只能阻塞同种信号
 //row col是全局变量 addstr也是全局生效的
 //举个例子当速度快到一定程度，出现递归调用的时候会refresh执行了

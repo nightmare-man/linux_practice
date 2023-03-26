@@ -1,5 +1,6 @@
 #include "bounce2d.h"
 struct ppball the_ball;
+int done=0;
 int bounce_or_lose(struct ppball* bp){
     int ret=0;
     if(bp->y_pos==TOP_ROW){
@@ -48,6 +49,29 @@ void ball_move(int sig){
     }
     signal(SIGALRM,ball_move);
 }
+void enable_kbd(){
+    //设置为只从当前进程接受io信号
+    fcntl(0,F_SETOWN);
+    int flag=fcntl(0,F_GETFL);
+    flag|=O_ASYNC;
+    fcntl(0,F_SETFL,flag);
+}
+void get_input(int sig_no){
+    int c=getch();
+    if(c=='f'){
+        the_ball.x_ttm--;
+        the_ball.y_ttm--;
+    }
+    else if(c=='s'){
+        the_ball.x_ttm++;
+        the_ball.y_ttm++;
+    }
+    else if(c=='j') the_ball.x_dir=-1;
+    else if(c=='l') the_ball.x_dir=1;
+    else if(c=='i') the_ball.y_dir=-1;
+    else if(c=='k') the_ball.y_dir=1;
+    else if(c=='q') done=1;
+}
 void set_up(){
      the_ball.y_pos=Y_INIT;
      the_ball.x_pos=X_INIT;
@@ -59,6 +83,9 @@ void set_up(){
      initscr();
      noecho();
      crmode();
+     //先设置异步io处理函数 再使能io
+     signal(SIGIO,get_input);
+     enable_kbd();
      signal(SIGINT,SIG_IGN);
      mvaddch(the_ball.y_pos,the_ball.y_pos,the_ball.symbol);
      refresh();
@@ -74,21 +101,8 @@ void wrap_up(){
 int main(){
     int c;
     set_up();
-    while(true ){
-        c=getch();
-        if(c=='f'){
-            the_ball.x_ttm--;
-            the_ball.y_ttm--;
-        }
-        else if(c=='s'){
-            the_ball.x_ttm++;
-            the_ball.y_ttm++;
-        }
-        else if(c=='j') the_ball.x_dir=-1;
-        else if(c=='l') the_ball.x_dir=1;
-        else if(c=='i') the_ball.y_dir=-1;
-        else if(c=='k') the_ball.y_dir=1;
-        else if(c=='q') break;
+    while(!done){
+        pause();
     }
     wrap_up();
 }

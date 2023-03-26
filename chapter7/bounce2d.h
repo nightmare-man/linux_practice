@@ -2,6 +2,7 @@
 #include <curses.h>
 #include <signal.h>
 #include "set_ticker.h"
+#include <fcntl.h>
 #include <iostream>
 #define BLANK ' '
 #define DFL_SYMBOL 'o'

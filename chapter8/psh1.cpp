@@ -19,6 +19,7 @@ int execute(const vector<string>& list ){
     }
     //根据man execve知，除了少数几种资源，所有进程内存空间均被替换
     //栈 堆 datasection codesection
+    //execvp并不启动新进程而是当前进程运行重装执行文件
     execvp(arg[0],arg);
     for(int i=0;i<list.size();i++){
         cout<<arg[i]<<endl;

@@ -12,7 +12,7 @@ using namespace std;
     listen 开始监听该地址的链接，
 */
 int main(){
-    //使用ipv4协议族 ，tcp sematic，因为tcp协议中就一种，所以最后一个参数为0
+    //使用ipv4协议族 使用流，因为只有tcp使用流，因此0即代表tcp
     int sock_id=socket(PF_INET,SOCK_STREAM,0);
     if(sock_id==-1) throw runtime_error{"can't open socket"};
     struct sockaddr_in pad; 

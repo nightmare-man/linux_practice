@@ -50,7 +50,8 @@
         "numbers": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "internet": "cpp"
+        "internet": "cpp",
+        "buffer": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

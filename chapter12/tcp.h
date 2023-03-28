@@ -24,11 +24,13 @@ namespace tcp{
             void Accept();
             int Read(char*,int)const;
             int Write(const char*,int)const;
+            void Handle(void(*callback)(int)){cb=callback;};
         private:
             std::vector<int> connected_id;
             int socket_id;
             const char* addr_str;
             int port;
+            void (*cb)(int);
     };
     class TcpClient{
         public:

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <errno.h>
 namespace tcp{
-TcpServer::TcpServer(const char* addr_s,int pport):addr_str{addr_s},port{pport}{
+TcpServer::TcpServer(const char* addr_s,int pport):addr_str{addr_s},port{pport},cb{nullptr}{
     socket_id=socket(AF_INET,SOCK_STREAM,0);
     if(socket_id==-1) throw TcpException{"socket error"};
     struct sockaddr_in tmp_ad;
@@ -18,6 +18,7 @@ TcpServer::TcpServer(const char* addr_s,int pport):addr_str{addr_s},port{pport}{
         throw TcpException{"listen error"};
     }
 }
+
 void TcpServer::Accept(){
     struct sockaddr_in tmp;
     socklen_t len=0;
@@ -25,6 +26,7 @@ void TcpServer::Accept(){
     new_fd=accept(socket_id,reinterpret_cast<sockaddr*>(&tmp),&len);
     if(new_fd==-1) throw TcpException{"accept error"};
     connected_id.push_back(new_fd);
+    if(cb) cb(new_fd);
 }
 int TcpServer::Read(char* buf,int size)const{
     return read(connected_id[connected_id.size()-1],buf,size);

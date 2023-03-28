@@ -4,12 +4,11 @@
 #include <iostream>
 using namespace tcp;
 int main(int ac,char* av[]){
-    if(ac<2) return -1;
-    std::istringstream in{av[1]};
+    if(ac<3) return -1;
+    std::istringstream in{av[2]};
     int port=0;
     in>>port;
-    std::cout<<port<<std::endl;
-    tcpserver server{"172.22.13.190",port};
+    tcpserver server{av[1],port};
     server.Accept();
     const char* a="hello";
     server.Write(a,6);

@@ -21,7 +21,7 @@ namespace tcp{
         public:
             TcpServer(const char* ,int );
             ~TcpServer(){close(socket_id);};
-            void Accept();
+            int Accept();
             int Read(char*,int)const;
             int Write(const char*,int)const;
             void Handle(void(*callback)(int)){cb=callback;};

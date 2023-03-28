@@ -4,6 +4,8 @@
 #include <sstream>
 #include <sys/wait.h>
 #include "tcp.h"
+#include <errno.h>
+#include <signal.h>
 using namespace tcp;
 void handle(int fd){
     int pid=fork();
@@ -18,8 +20,19 @@ void handle(int fd){
         execl("/usr/bin/date","date",nullptr);
         exit(1);
     }else{
-        wait(nullptr);
+        //wait用于释放资源，进程终止或者被杀死，不一定释放了资源， 用来防治僵尸进程zombie
+        //wait(nullptr);
+        //父进程不等待了，直接继续accept
+        //由信号来处理子进程
     }
+}
+void child_waiter(int sig){
+    //这里使用了waitpid()而不是wait wait一次只能处理一个
+    //后面的如果同时进入信号处理会被阻塞及遗漏
+    //因此使用waitpid-1 表示等待所有子进程，一次等一个，但是使用循环
+    //WNOHANG表示如果没有退出的子进程那就立刻返回，防止阻塞
+    //waitpid释放进程成功时返回pid
+    while(waitpid(-1,nullptr,WNOHANG)>0);
 }
 int main(int ac,char*av[]){
     if(ac<3) return -1;
@@ -28,6 +41,9 @@ int main(int ac,char*av[]){
     in>>port;
     tcpserver server{av[1],port};
     server.Handle(handle);
-    server.Accept();
-    std::cout<<"end";
+    signal(SIGCHLD,child_waiter);
+    while(true){
+        int ret=server.Accept();
+        if(ret==-1&&errno!=EINTR) break;
+    }
 }

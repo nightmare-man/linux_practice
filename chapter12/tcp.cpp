@@ -19,14 +19,15 @@ TcpServer::TcpServer(const char* addr_s,int pport):addr_str{addr_s},port{pport},
     }
 }
 
-void TcpServer::Accept(){
+int TcpServer::Accept(){
     struct sockaddr_in tmp;
     socklen_t len=0;
     int new_fd=-1;
     new_fd=accept(socket_id,reinterpret_cast<sockaddr*>(&tmp),&len);
-    if(new_fd==-1) throw TcpException{"accept error"};
+    if(new_fd==-1) return -1;
     connected_id.push_back(new_fd);
     if(cb) cb(new_fd);
+    return 0;
 }
 int TcpServer::Read(char* buf,int size)const{
     return read(connected_id[connected_id.size()-1],buf,size);

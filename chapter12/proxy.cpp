@@ -32,6 +32,11 @@ void child_waiter(int sig){
     //因此使用waitpid-1 表示等待所有子进程，一次等一个，但是使用循环
     //WNOHANG表示如果没有退出的子进程那就立刻返回，防止阻塞
     //waitpid释放进程成功时返回pid
+
+    //通过实验，不加wait处理用ps命令可以看到date进程仍在
+    //处于z状态，zombie
+    //linux为什么要这么设计呢？因为想让父进程拿到子进程结束时的状态
+    //因此没有立马释放子进程所有资源，可以通过wait waitpid中的那个指针，拿到信息
     while(waitpid(-1,nullptr,WNOHANG)>0);
 }
 int main(int ac,char*av[]){
@@ -41,7 +46,7 @@ int main(int ac,char*av[]){
     in>>port;
     tcpserver server{av[1],port};
     server.Handle(handle);
-    signal(SIGCHLD,child_waiter);
+    //signal(SIGCHLD,child_waiter);
     while(true){
         int ret=server.Accept();
         if(ret==-1&&errno!=EINTR) break;

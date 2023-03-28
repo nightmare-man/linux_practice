@@ -20,11 +20,15 @@ void handle(int fd){
         execl("/usr/bin/date","date",nullptr);
         exit(1);
     }else{
+        
+        
         //wait用于释放资源，进程终止或者被杀死，不一定释放了资源， 用来防治僵尸进程zombie
         //wait(nullptr);
         //父进程不等待了，直接继续accept
         //由信号来处理子进程
     }
+    //关闭建立的连接，不论父子
+    close(fd);
 }
 void child_waiter(int sig){
     //这里使用了waitpid()而不是wait wait一次只能处理一个

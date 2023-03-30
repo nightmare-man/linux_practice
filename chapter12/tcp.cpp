@@ -27,7 +27,7 @@ int TcpServer::Accept(){
     if(new_fd==-1) return -1;
     connected_id.push_back(new_fd);
     if(cb) cb(new_fd);
-    return 0;
+    return new_fd;
 }
 int TcpServer::Read(char* buf,int size)const{
     return read(connected_id[connected_id.size()-1],buf,size);

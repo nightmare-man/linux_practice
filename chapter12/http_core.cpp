@@ -90,11 +90,11 @@ void forbidden(char*buf,int len,const char* msg){
     
 }
 void not_found(char*buf,int len,const char*msg){
-     ostringstream out{};
-    cout<<"HTTP/1.0 404 Not Foud\r\n";
-    cout<<"Content-type: text/plain\r\n";
-    cout<<"\r\n";
-    cout<<msg;
+    ostringstream out{};
+    out<<"HTTP/1.0 404 Not Foud\r\n";
+    out<<"Content-type: text/plain\r\n";
+    out<<"\r\n";
+    out<<msg;
     strncpy(buf,out.rdbuf()->str().c_str(),len);
 }
 string show_mode_info(int mode){

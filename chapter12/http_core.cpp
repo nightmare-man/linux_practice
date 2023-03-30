@@ -56,6 +56,7 @@ void do_cat(char* buf,int len,const char* file){
     istream_iterator<char> in_eof{};
     ostream_iterator<char> out_begin{out};
     copy(in_begin,in_eof,out_begin);
+    //strncpy会将终止符0也复制
     strncpy(buf,out.rdbuf()->str().c_str(),len);
 }
 void exec_cgi(char*buf,int len,const char* file){

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <pthread.h>
+#include <string.h>
 #include "../chapter12/tcp.h"
 #include "../chapter12/http_core.h"
 using namespace tcp;
@@ -11,7 +12,7 @@ void* work_routine(void* arg){
     read(fd,buf,1024);
     HttpCore core{buf};
     core.Exec(buf,1024);
-    write(fd,buf,1024);
+    write(fd,buf,strlen(buf));
     close(fd);
     return nullptr;
 }

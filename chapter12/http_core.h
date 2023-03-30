@@ -1,15 +1,18 @@
 
 #pragma once
 #include <dirent.h>
+#include <string>
 #define MAXLINELEN 128
 class HttpCore{
     public:
-    HttpCore();
-    ~HttpCore(){delete file_info;};
-    void Exec();
+    struct Request{
+        std::string cmd;
+        std::string url;
+    };
+    HttpCore(const char* request_str);
+    void Exec(char*buf,int len);
     private:
     int set_file_info();
-    char cmd_str[10];
-    char arg_str[MAXLINELEN];
-    struct dirent* file_info;
+    struct Request r;
+    struct dirent f_info;
 };

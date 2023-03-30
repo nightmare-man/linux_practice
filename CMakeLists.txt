@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(CmakeTest)
-add_executable(CmakeTest Cmake_test.cpp)
+add_executable(CmakeTest main.cpp)
+target_link_libraries(CmakeTest pthread)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE Release)

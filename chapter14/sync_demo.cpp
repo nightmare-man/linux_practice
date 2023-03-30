@@ -36,14 +36,17 @@ int main(int ac,char*av[]){
     //并记录完成数，但实际上第二次查询时仍将之前完成的计入，导致直接出循环
     //主线程结束，导致另一个没完成的也结束了。完全不符合等到两个都完成并
     //立刻显示的目的。因此一旦发现完成，立刻显示并标记已被检查过下次不再检查
+    int finish[2]{0,0};
     while(cnt<2){
-        if(ag[0].number!=-1){
+        if(ag[0].number!=-1&&finish[0]==0){
             cout<<"file1 words: "<<ag[0].number<<endl;
             cnt++;
+            finish[0]=1;
         }
-        if(ag[1].number!=-1){
+        if(ag[1].number!=-1&&finish[1]==0){
             cout<<"file2 words: "<<ag[1].number<<endl;
             cnt++;
+            finish[1]=1;
         }
     }
     cout<<"total wordls:"<<ag[1].number+ag[0].number<<endl;

@@ -53,6 +53,7 @@ int main(int ac,char*av[]){
     //signal(SIGCHLD,child_waiter);
     while(true){
         int ret=server.Accept();
+        //当系统调用时被信号处理打断，产生EINTR错误
         if(ret==-1&&errno!=EINTR) break;
     }
 }

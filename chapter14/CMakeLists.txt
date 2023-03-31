@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(bounce_thread)
-add_executable(bounce_thread bounce_thread.cpp ../chapter7/set_ticker.cpp)
+add_executable(bounce_thread bounce_thread.cpp)
 target_link_libraries(bounce_thread pthread)
 target_link_libraries(bounce_thread curses)
 set(CMAKE_CXX_STANDARD 11)

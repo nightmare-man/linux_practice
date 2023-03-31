@@ -18,7 +18,7 @@ void* work_routine(void* arg){
     core.Exec(buf,1024);
     int len=strlen(buf);
     pthread_mutex_lock(&mutex);
-    byte_cnt+=(len);
+    byte_cnt++;
     pthread_mutex_unlock(&mutex);
     write(fd,buf,len);
     close(fd);
@@ -60,13 +60,14 @@ int main(int ac,char*av[]){
     pthread_attr_init(&attr);
     //根据man得知：
     //设置线程为detached（独立的） 非独立的线程需要用join回收资源
-    //也可以用pthread_detach()设置
+  
     signal(SIGINT,sig_handler);
     pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);   
     while (true)
     {
         int fd=server.Accept();
         pthread_create(&work,&attr,work_routine,reinterpret_cast<void*>(&fd));    
+        pthread_detach(work);
     }
     
 }
